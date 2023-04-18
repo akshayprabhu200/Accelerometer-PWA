@@ -9,41 +9,23 @@
 	<div id="location-data"></div>
 
 	<script>
-		// Check for support for the Permissions API and the Geolocation API
-		if ('permissions' in navigator && 'geolocation' in navigator) {
+		// Check for support for the Geolocation API
+		if ('geolocation' in navigator) {
 			// Request permission to use the Geolocation API
-			navigator.permissions.query({name:'geolocation'}).then(function(result) {
-				if (result.state === 'granted') {
-					// Permission has already been granted, so get the user's location
-					getLocation();
-				} else {
-					// Permission hasn't been granted yet, so display a button to request permission
-					var button = document.createElement('button');
-					button.textContent = 'Request location permission';
-					button.addEventListener('click', function() {
-						navigator.permissions.request({name:'geolocation'}).then(function(result) {
-							if (result.state === 'granted') {
-								// Permission has been granted, so get the user's location
-								getLocation();
-							}
-						});
-					});
-					document.body.appendChild(button);
-				}
-			});
-		} else {
-			// Permissions API or Geolocation API not supported
-			var message = document.createElement('p');
-			message.textContent = 'The Permissions API or Geolocation API is not supported in this browser.';
-			document.body.appendChild(message);
-		}
-
-		// Function to get the user's location
-		function getLocation() {
 			navigator.geolocation.getCurrentPosition(function(position) {
 				// Display the latitude and longitude
 				document.getElementById('location-data').textContent = 'Latitude: ' + position.coords.latitude.toFixed(2) + ', Longitude: ' + position.coords.longitude.toFixed(2);
+			}, function(error) {
+				// Permission denied or other error occurred
+				var message = document.createElement('p');
+				message.textContent = 'Unable to retrieve location data: ' + error.message;
+				document.body.appendChild(message);
 			});
+		} else {
+			// Geolocation API not supported
+			var message = document.createElement('p');
+			message.textContent = 'The Geolocation API is not supported in this browser.';
+			document.body.appendChild(message);
 		}
 	</script>
 </body>
